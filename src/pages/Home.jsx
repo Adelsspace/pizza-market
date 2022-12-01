@@ -9,21 +9,40 @@ const Home = () => {
   //https://6383693c6e6c83b7a992dead.mockapi.io/items
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [sortType, setSortType] = useState({
+    name: "популярности",
+    sortProperty: "rating",
+  });
+  const [orderType, setOrderType] = useState("asc");
+  const [categoryId, setCategoryId] = useState(0);
 
   useEffect(() => {
-    fetch("https://6383693c6e6c83b7a992dead.mockapi.io/items")
+    setIsLoading(true);
+    fetch(
+      `https://6383693c6e6c83b7a992dead.mockapi.io/items?${
+        categoryId > 0 ? `category=${categoryId}` : ""
+      }&sortBy=${sortType.sortProperty}&order=${orderType}`
+    )
       .then((res) => res.json())
       .then((data) => {
         setItems(data);
         setIsLoading(false);
       });
     window.scrollTo(0, 0);
-  }, []);
+  }, [categoryId, sortType, orderType]);
   return (
     <div className="container">
       <div className="content__top">
-        <Categories />
-        <Sort />
+        <Categories
+          categoryId={categoryId}
+          onChangeCategory={(i) => setCategoryId(i)}
+        />
+        <Sort
+          sortType={sortType}
+          onChangeSort={(i) => setSortType(i)}
+          onChangeOrder={(i) => setOrderType(i)}
+          orderType={orderType}
+        />
       </div>
       <h2 className="content__title">Все пиццы</h2>
       <div className="content__items">

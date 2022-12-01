@@ -50,4 +50,21 @@
       }
     }
   }
+  button {
+    text-align: center;
+    width: 35px;
+    height: 35px;
+    padding: 5px;
+    border: 1px solid #fe5f1e;
+    border-radius: 30px;
+    margin-right: 5px;
+    cursor: pointer;
+    background-color: white;
+    color: #fe5f1e;
+
+    &.active {
+      background-color: #fe5f1e;
+      color: white;
+    }
+  }
 }
