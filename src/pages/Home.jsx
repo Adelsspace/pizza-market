@@ -1,0 +1,51 @@
+import { useState, useEffect } from "react";
+
+import Categories from "../components/Categories";
+import Sort from "../components/Sort";
+import Card from "../components/Card";
+import PlaceHolder from "../components/PlaceHolder";
+
+const Home = () => {
+  //https://6383693c6e6c83b7a992dead.mockapi.io/items
+  const [items, setItems] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    fetch("https://6383693c6e6c83b7a992dead.mockapi.io/items")
+      .then((res) => res.json())
+      .then((data) => {
+        setItems(data);
+        setIsLoading(false);
+      });
+    window.scrollTo(0, 0);
+  }, []);
+  return (
+    <div className="container">
+      <div className="content__top">
+        <Categories />
+        <Sort />
+      </div>
+      <h2 className="content__title">Все пиццы</h2>
+      <div className="content__items">
+        {isLoading
+          ? [...new Array(6)].map((_, index) => <PlaceHolder key={index} />)
+          : items.map((obj) =>
+              isLoading ? (
+                <PlaceHolder />
+              ) : (
+                <Card
+                  key={obj.id}
+                  title={obj.title}
+                  price={obj.price}
+                  imageUrl={obj.imageUrl}
+                  sizes={obj.sizes}
+                  types={obj.types}
+                />
+              )
+            )}
+      </div>
+    </div>
+  );
+};
+
+export default Home;
