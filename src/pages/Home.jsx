@@ -1,13 +1,15 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useContext } from "react";
 
 import Categories from "../components/Categories";
 import Sort from "../components/Sort";
 import Card from "../components/Card";
 import PlaceHolder from "../components/PlaceHolder";
 import Pagination from "../components/PaginationComponent/Pagination";
+import { SearchContext } from "../App";
 
-const Home = ({ searchValue }) => {
+const Home = () => {
   //https://6383693c6e6c83b7a992dead.mockapi.io/items
+  const { searchValue } = useContext(SearchContext);
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [sortType, setSortType] = useState({
