@@ -1,5 +1,6 @@
-import React, { useState, useEffect, createContext } from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import React, { useState, createContext } from "react";
+import { Routes, Route } from "react-router-dom";
+
 import "./scss/app.scss";
 
 import Header from "./components/Header";

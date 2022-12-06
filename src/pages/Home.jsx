@@ -1,4 +1,6 @@
 import { useState, useEffect, useContext } from "react";
+import { useSelector, useDispatch } from "react-redux";
+import { setCategoryId, setSortType } from "../redux/slices/filterSlice";
 
 import Categories from "../components/Categories";
 import Sort from "../components/Sort";
@@ -8,24 +10,32 @@ import Pagination from "../components/PaginationComponent/Pagination";
 import { SearchContext } from "../App";
 
 const Home = () => {
+  const dispatch = useDispatch();
+
+  const categoryId = useSelector((state) => state.filter.categoryId);
+  const sortType = useSelector((state) => state.filter.sort.sortProperty);
+  const orderType = useSelector((state) => state.filter.sort.type);
+
   //https://6383693c6e6c83b7a992dead.mockapi.io/items
   const { searchValue } = useContext(SearchContext);
   const [items, setItems] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [sortType, setSortType] = useState({
-    name: "популярности",
-    sortProperty: "rating",
-  });
-  const [orderType, setOrderType] = useState("asc");
-  const [categoryId, setCategoryId] = useState(0);
+
   const [currentPage, setCurrentPage] = useState(1);
   const search = searchValue ? `&search=${searchValue}` : "";
   const category = categoryId > 0 ? `category=${categoryId}` : "";
 
+  const onChangeCategory = (id) => {
+    dispatch(setCategoryId(id));
+  };
+  const onChangeOrder = (sortType) => {
+    dispatch(setSortType(sortType));
+  };
+
   useEffect(() => {
     setIsLoading(true);
     fetch(
-      `https://6383693c6e6c83b7a992dead.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortType.sortProperty}&order=${orderType}${search}`
+      `https://6383693c6e6c83b7a992dead.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortType}&order=${orderType}${search}`
     )
       .then((res) => res.json())
       .then((data) => {
@@ -56,14 +66,9 @@ const Home = () => {
       <div className="content__top">
         <Categories
           categoryId={categoryId}
-          onChangeCategory={(i) => setCategoryId(i)}
+          onChangeCategory={onChangeCategory}
         />
-        <Sort
-          sortType={sortType}
-          onChangeSort={(i) => setSortType(i)}
-          onChangeOrder={(i) => setOrderType(i)}
-          orderType={orderType}
-        />
+        <Sort onChangeOrder={onChangeOrder} />
       </div>
       <h2 className="content__title">Все пиццы</h2>
       <div className="content__items">{isLoading ? placeHolders : cards}</div>
