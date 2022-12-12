@@ -1,14 +1,17 @@
-import { useState, useEffect, useContext } from "react";
+import { useState, useEffect, useContext, useRef } from "react";
 import axios from "axios";
+import qs from "qs";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setCategoryId,
   setSortType,
   setCurrentPage,
+  setFilters,
 } from "../redux/slices/filterSlice";
 
 import Categories from "../components/Categories";
-import Sort from "../components/Sort";
+import Sort, { list } from "../components/Sort";
 import Card from "../components/Card";
 import PlaceHolder from "../components/PlaceHolder";
 import Pagination from "../components/PaginationComponent/Pagination";
@@ -16,6 +19,9 @@ import { SearchContext } from "../App";
 
 const Home = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const isSearch = useRef(false);
+  const isMounted = useRef(false);
 
   const categoryId = useSelector((state) => state.filter.categoryId);
   const currentPage = useSelector((state) => state.filter.currentPage);
@@ -41,18 +47,58 @@ const Home = () => {
     dispatch(setCurrentPage(number));
   };
 
-  useEffect(() => {
+  const fetchPizzas = () => {
     setIsLoading(true);
     axios
       .get(
-        `https://6383693c6e6c83b7a992dead.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortType}&order=${orderType}${search}`
+        `https://6383693c6e6c83b7a992dead.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortType}&order=${
+          orderType ? orderType : "asc"
+        }${search}`
       )
       .then((res) => {
         setItems(res.data);
         setIsLoading(false);
       });
     window.scrollTo(0, 0);
-  }, [categoryId, sortType, orderType, searchValue, currentPage]);
+  };
+
+  //после первого рендера сохраняем url в redux
+  useEffect(() => {
+    if (window.location.search) {
+      const params = qs.parse(window.location.search.substring(1));
+      console.log("ppp", params);
+      const sort = list.find((obj) => obj.sortProperty === params.sortType);
+      dispatch(
+        setFilters({
+          ...params,
+          sort,
+        })
+      );
+      isSearch.current = true;
+    }
+  }, []);
+
+  //если был первый рендер то запрашиваем пиццы
+  useEffect(() => {
+    if (!isSearch.current) fetchPizzas();
+
+    isSearch.current = false;
+  }, [category, sortType, orderType, search, currentPage]);
+
+  //если был первый рендер, то проверяем url-параметры и сохранием в redux
+  useEffect(() => {
+    if (isMounted.current) {
+      const queryString = qs.stringify({
+        sortType: sortType,
+        categoryId: categoryId,
+        currentPage,
+        orderType,
+      });
+      navigate(`?${queryString}`);
+    }
+    isMounted.current = true;
+  }, [categoryId, sortType, orderType, currentPage]);
+
   const cards = items.map((obj) =>
     isLoading ? (
       <PlaceHolder />
