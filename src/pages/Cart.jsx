@@ -1,6 +1,7 @@
 import React from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
+import CartEmpty from "../components/cartEmpty";
 import CartItem from "../components/CartItem";
 import { clearItems } from "../redux/slices/cartSlice";
 
@@ -12,6 +13,10 @@ const Cart = () => {
   const onClickCLear = () => {
     if (window.confirm("Очистить корзину?")) dispatch(clearItems());
   };
+
+  if (!totalPrice) {
+    return <CartEmpty />;
+  }
 
   return (
     <div className="container containter--cart">
