@@ -47,18 +47,22 @@ const Home = () => {
     dispatch(setCurrentPage(number));
   };
 
-  const fetchPizzas = () => {
+  const fetchPizzas = async () => {
     setIsLoading(true);
-    axios
-      .get(
+    try {
+      const res = await axios.get(
         `https://6383693c6e6c83b7a992dead.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortType}&order=${
           orderType ? orderType : "asc"
         }${search}`
-      )
-      .then((res) => {
-        setItems(res.data);
-        setIsLoading(false);
-      });
+      );
+      setItems(res.data);
+    } catch (error) {
+      console.error(error.message);
+      alert("ошибка при получении данных от сервера");
+    } finally {
+      setIsLoading(false);
+    }
+
     window.scrollTo(0, 0);
   };
 
