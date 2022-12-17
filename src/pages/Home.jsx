@@ -1,5 +1,5 @@
 import { useState, useEffect, useContext, useRef } from "react";
-import axios from "axios";
+
 import qs from "qs";
 import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
@@ -9,6 +9,7 @@ import {
   setCurrentPage,
   setFilters,
 } from "../redux/slices/filterSlice";
+import { fetchPizzas } from "../redux/slices/pizzasSlice";
 
 import Categories from "../components/Categories";
 import Sort, { list } from "../components/Sort";
@@ -27,11 +28,10 @@ const Home = () => {
   const currentPage = useSelector((state) => state.filter.currentPage);
   const sortType = useSelector((state) => state.filter.sort.sortProperty);
   const orderType = useSelector((state) => state.filter.sort.type);
+  const { items, status } = useSelector((state) => state.pizza);
 
   //https://6383693c6e6c83b7a992dead.mockapi.io/items
   const { searchValue } = useContext(SearchContext);
-  const [items, setItems] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
   const search = searchValue ? `&search=${searchValue}` : "";
   const category = categoryId > 0 ? `category=${categoryId}` : "";
@@ -47,22 +47,10 @@ const Home = () => {
     dispatch(setCurrentPage(number));
   };
 
-  const fetchPizzas = async () => {
-    setIsLoading(true);
-    try {
-      const res = await axios.get(
-        `https://6383693c6e6c83b7a992dead.mockapi.io/items?page=${currentPage}&limit=4&${category}&sortBy=${sortType}&order=${
-          orderType ? orderType : "asc"
-        }${search}`
-      );
-      setItems(res.data);
-    } catch (error) {
-      console.error(error.message);
-      alert("ошибка при получении данных от сервера");
-    } finally {
-      setIsLoading(false);
-    }
-
+  const getPizzas = async () => {
+    dispatch(
+      fetchPizzas({ currentPage, category, sortType, orderType, search })
+    );
     window.scrollTo(0, 0);
   };
 
@@ -70,7 +58,6 @@ const Home = () => {
   useEffect(() => {
     if (window.location.search) {
       const params = qs.parse(window.location.search.substring(1));
-      console.log("ppp", params);
       const sort = list.find((obj) => obj.sortProperty === params.sortType);
       dispatch(
         setFilters({
@@ -84,7 +71,7 @@ const Home = () => {
 
   //если был первый рендер то запрашиваем пиццы
   useEffect(() => {
-    if (!isSearch.current) fetchPizzas();
+    if (!isSearch.current) getPizzas();
 
     isSearch.current = false;
   }, [category, sortType, orderType, search, currentPage]);
@@ -103,21 +90,17 @@ const Home = () => {
     isMounted.current = true;
   }, [categoryId, sortType, orderType, currentPage]);
 
-  const cards = items.map((obj) =>
-    isLoading ? (
-      <PlaceHolder />
-    ) : (
-      <Card
-        key={obj.id}
-        id={obj.id}
-        title={obj.title}
-        price={obj.price}
-        imageUrl={obj.imageUrl}
-        sizes={obj.sizes}
-        types={obj.types}
-      />
-    )
-  );
+  const cards = items.map((obj) => (
+    <Card
+      key={obj.id}
+      id={obj.id}
+      title={obj.title}
+      price={obj.price}
+      imageUrl={obj.imageUrl}
+      sizes={obj.sizes}
+      types={obj.types}
+    />
+  ));
   const placeHolders = [...new Array(6)].map((_, index) => (
     <PlaceHolder key={index} />
   ));
@@ -131,7 +114,19 @@ const Home = () => {
         <Sort onChangeOrder={onChangeOrder} />
       </div>
       <h2 className="content__title">Все пиццы</h2>
-      <div className="content__items">{isLoading ? placeHolders : cards}</div>
+      {status === "error" ? (
+        <div className="content_error-info">
+          <h2>Произошла ошибка 😟</h2>
+          <p>
+            Не удалось получить данные от сервера, попробуйте повторить попытку
+            позже.
+          </p>
+        </div>
+      ) : (
+        <div className="content__items">
+          {status === "loading" ? placeHolders : cards}
+        </div>
+      )}
 
       <Pagination currentPage={currentPage} onChangePage={onChangePage} />
     </div>

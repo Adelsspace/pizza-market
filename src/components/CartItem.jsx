@@ -5,13 +5,13 @@ import { addItem, minusItem, removeItem } from "../redux/slices/cartSlice";
 const CartItem = ({ id, title, type, size, price, count, imageUrl }) => {
   const dispatch = useDispatch();
 
-  const clickOnClickPlus = () => {
+  const onClickPlus = () => {
     dispatch(addItem({ id }));
   };
-  const clickOnClickMinus = () => {
+  const onClickMinus = () => {
     dispatch(minusItem(id));
   };
-  const clickOnClickRemove = () => {
+  const onClickRemove = () => {
     if (window.confirm("Точно действительно хочешь удалить из корзины?"))
       dispatch(removeItem(id));
   };
@@ -28,7 +28,7 @@ const CartItem = ({ id, title, type, size, price, count, imageUrl }) => {
       </div>
       <div class="cart__item-count">
         <div
-          onClick={clickOnClickMinus}
+          onClick={onClickMinus}
           class="button button--outline button--circle cart__item-count-minus"
         >
           <svg
@@ -50,7 +50,7 @@ const CartItem = ({ id, title, type, size, price, count, imageUrl }) => {
         </div>
         <b>{count}</b>
         <div
-          onClick={clickOnClickPlus}
+          onClick={onClickPlus}
           class="button button--outline button--circle cart__item-count-plus"
         >
           <svg
@@ -76,7 +76,7 @@ const CartItem = ({ id, title, type, size, price, count, imageUrl }) => {
       </div>
       <div class="cart__item-remove">
         <div
-          onClick={clickOnClickRemove}
+          onClick={onClickRemove}
           class="button button--outline button--circle"
         >
           <svg
