@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext, useRef } from "react";
+import { useEffect, useRef } from "react";
 
 import qs from "qs";
 import { useNavigate } from "react-router-dom";
@@ -8,15 +8,16 @@ import {
   setSortType,
   setCurrentPage,
   setFilters,
+  selectSort,
+  selectFilter,
 } from "../redux/slices/filterSlice";
-import { fetchPizzas } from "../redux/slices/pizzasSlice";
+import { fetchPizzas, selectPizzaData } from "../redux/slices/pizzasSlice";
 
 import Categories from "../components/Categories";
 import Sort, { list } from "../components/Sort";
 import Card from "../components/Card";
 import PlaceHolder from "../components/PlaceHolder";
 import Pagination from "../components/PaginationComponent/Pagination";
-import { SearchContext } from "../App";
 
 const Home = () => {
   const dispatch = useDispatch();
@@ -24,14 +25,11 @@ const Home = () => {
   const isSearch = useRef(false);
   const isMounted = useRef(false);
 
-  const categoryId = useSelector((state) => state.filter.categoryId);
-  const currentPage = useSelector((state) => state.filter.currentPage);
-  const sortType = useSelector((state) => state.filter.sort.sortProperty);
-  const orderType = useSelector((state) => state.filter.sort.type);
-  const { items, status } = useSelector((state) => state.pizza);
+  const { categoryId, currentPage, searchValue } = useSelector(selectFilter);
+  const { sortProperty: sortType, type: orderType } = useSelector(selectSort);
+  const { items, status } = useSelector(selectPizzaData);
 
   //https://6383693c6e6c83b7a992dead.mockapi.io/items
-  const { searchValue } = useContext(SearchContext);
 
   const search = searchValue ? `&search=${searchValue}` : "";
   const category = categoryId > 0 ? `category=${categoryId}` : "";
