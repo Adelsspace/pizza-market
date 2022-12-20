@@ -1,7 +1,7 @@
 import { useEffect, useRef } from "react";
 
 import qs from "qs";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import {
   setCategoryId,
@@ -89,15 +89,17 @@ const Home = () => {
   }, [categoryId, sortType, orderType, currentPage]);
 
   const cards = items.map((obj) => (
-    <Card
-      key={obj.id}
-      id={obj.id}
-      title={obj.title}
-      price={obj.price}
-      imageUrl={obj.imageUrl}
-      sizes={obj.sizes}
-      types={obj.types}
-    />
+    <Link key={obj.id} to={`/pizza/${obj.id}`}>
+      {" "}
+      <Card
+        id={obj.id}
+        title={obj.title}
+        price={obj.price}
+        imageUrl={obj.imageUrl}
+        sizes={obj.sizes}
+        types={obj.types}
+      />
+    </Link>
   ));
   const placeHolders = [...new Array(6)].map((_, index) => (
     <PlaceHolder key={index} />
