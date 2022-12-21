@@ -19,7 +19,7 @@ import Card from "../components/Card";
 import PlaceHolder from "../components/PlaceHolder";
 import Pagination from "../components/PaginationComponent/Pagination";
 
-const Home = () => {
+const Home: React.FC = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const isSearch = useRef(false);
@@ -34,19 +34,20 @@ const Home = () => {
   const search = searchValue ? `&search=${searchValue}` : "";
   const category = categoryId > 0 ? `category=${categoryId}` : "";
 
-  const onChangeCategory = (id) => {
+  const onChangeCategory = (id: number) => {
     dispatch(setCategoryId(id));
   };
-  const onChangeOrder = (sortType) => {
+  const onChangeOrder = (sortType: string) => {
     dispatch(setSortType(sortType));
   };
 
-  const onChangePage = (number) => {
-    dispatch(setCurrentPage(number));
+  const onChangePage = (page: number) => {
+    dispatch(setCurrentPage(page));
   };
 
   const getPizzas = async () => {
     dispatch(
+      //@ts-ignore
       fetchPizzas({ currentPage, category, sortType, orderType, search })
     );
     window.scrollTo(0, 0);
@@ -88,7 +89,7 @@ const Home = () => {
     isMounted.current = true;
   }, [categoryId, sortType, orderType, currentPage]);
 
-  const cards = items.map((obj) => (
+  const cards = items.map((obj: any) => (
     <Link key={obj.id} to={`/pizza/${obj.id}`}>
       {" "}
       <Card
@@ -111,7 +112,7 @@ const Home = () => {
           categoryId={categoryId}
           onChangeCategory={onChangeCategory}
         />
-        <Sort onChangeOrder={onChangeOrder} />
+        <Sort />
       </div>
       <h2 className="content__title">Все пиццы</h2>
       {status === "error" ? (

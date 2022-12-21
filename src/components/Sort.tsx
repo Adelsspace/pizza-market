@@ -4,32 +4,41 @@ import {
   selectSort,
   selectSortType,
   setSort,
+  setSortType,
 } from "../redux/slices/filterSlice";
 
-export const list = [
+type SortList = {
+  name: string;
+  sortProperty: string;
+};
+
+export const list: SortList[] = [
   { name: "поплуярности", sortProperty: "rating" },
   { name: "цене", sortProperty: "price" },
   { name: "алфавиту", sortProperty: "title" },
 ];
 
-function Sort({ onChangeOrder }) {
+function Sort() {
   const dispatch = useDispatch();
   const sort = useSelector(selectSort);
   const orderType = useSelector(selectSortType);
-  const sortRef = useRef();
+  const sortRef = useRef<HTMLDivElement>(null);
 
   const [openSort, setOpenSort] = useState(false);
 
-  const onClickListItem = (obj) => {
+  const onClickListItem = (obj: SortList) => {
     dispatch(setSort(obj));
     setOpenSort(false);
   };
+  const onClickChangeOrder = (type: string) => {
+    dispatch(setSortType(type));
+  };
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      console.log(event.composedPath());
-      let path = event.composedPath().includes(sortRef.current);
-      if (!path) setOpenSort(false);
+    const handleClickOutside = (event: MouseEvent) => {
+      if (sortRef.current && !event.composedPath().includes(sortRef.current)) {
+        setOpenSort(false);
+      }
     };
 
     document.body.addEventListener("click", handleClickOutside);
@@ -73,14 +82,14 @@ function Sort({ onChangeOrder }) {
         </div>
       )}
       <button
-        onClick={() => onChangeOrder("asc")}
+        onClick={() => onClickChangeOrder("asc")}
         className={orderType === "asc" ? "active" : ""}
       >
         {" "}
         ↑{" "}
       </button>
       <button
-        onClick={() => onChangeOrder("desc")}
+        onClick={() => onClickChangeOrder("desc")}
         className={orderType === "desc" ? "active" : ""}
       >
         {" "}

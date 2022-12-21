@@ -1,7 +1,7 @@
 import React from "react";
 import ContentLoader from "react-content-loader";
 
-const PlaceHolder = (props) => (
+const PlaceHolder: React.FC = () => (
   <ContentLoader
     className="pizza-block"
     speed={2}
@@ -10,7 +10,6 @@ const PlaceHolder = (props) => (
     viewBox="0 0 280 500"
     backgroundColor="#f3f3f3"
     foregroundColor="#ecebeb"
-    {...props}
   >
     <circle cx="134" cy="136" r="125" />
     <rect x="9" y="281" rx="10" ry="10" width="246" height="24" />
