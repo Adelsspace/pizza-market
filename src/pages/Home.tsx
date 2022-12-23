@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useCallback } from "react";
 
 import qs from "qs";
 import { Link, useNavigate } from "react-router-dom";
@@ -30,7 +30,8 @@ const Home: React.FC = () => {
   const isSearch = useRef(false);
   const isMounted = useRef(false);
 
-  const { categoryId, currentPage, searchValue } = useSelector(selectFilter);
+  const { categoryId, sort, currentPage, searchValue } =
+    useSelector(selectFilter);
   const { sortProperty: sortBy, type: orderType } = useSelector(selectSort);
   const { items, status } = useSelector(selectPizzaData);
 
@@ -39,9 +40,9 @@ const Home: React.FC = () => {
   const search = searchValue ? `&search=${searchValue}` : "";
   const category = categoryId > 0 ? `category=${categoryId}` : "";
 
-  const onChangeCategory = (id: number) => {
+  const onChangeCategory = useCallback((id: number) => {
     dispatch(setCategoryId(id));
-  };
+  }, []);
   const onChangePage = (page: number) => {
     dispatch(setCurrentPage(page));
   };
@@ -125,7 +126,7 @@ const Home: React.FC = () => {
           categoryId={categoryId}
           onChangeCategory={onChangeCategory}
         />
-        <Sort />
+        <Sort value={sort} />
       </div>
       <h2 className="content__title">Все пиццы</h2>
       {status === "error" ? (
