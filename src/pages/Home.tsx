@@ -11,22 +11,27 @@ import {
   selectSort,
   selectFilter,
 } from "../redux/slices/filterSlice";
-import { fetchPizzas, selectPizzaData } from "../redux/slices/pizzasSlice";
+import {
+  fetchPizzas,
+  SearchPizzaParams,
+  selectPizzaData,
+} from "../redux/slices/pizzasSlice";
 
 import Categories from "../components/Categories";
 import Sort, { list } from "../components/Sort";
 import Card from "../components/Card";
 import PlaceHolder from "../components/PlaceHolder";
 import Pagination from "../components/PaginationComponent/Pagination";
+import { useAppDispatch } from "../redux/store";
 
 const Home: React.FC = () => {
-  const dispatch = useDispatch();
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
   const isSearch = useRef(false);
   const isMounted = useRef(false);
 
   const { categoryId, currentPage, searchValue } = useSelector(selectFilter);
-  const { sortProperty: sortType, type: orderType } = useSelector(selectSort);
+  const { sortProperty: sortBy, type: orderType } = useSelector(selectSort);
   const { items, status } = useSelector(selectPizzaData);
 
   //https://6383693c6e6c83b7a992dead.mockapi.io/items
@@ -37,70 +42,78 @@ const Home: React.FC = () => {
   const onChangeCategory = (id: number) => {
     dispatch(setCategoryId(id));
   };
-  const onChangeOrder = (sortType: string) => {
-    dispatch(setSortType(sortType));
-  };
-
   const onChangePage = (page: number) => {
     dispatch(setCurrentPage(page));
   };
-
   const getPizzas = async () => {
     dispatch(
-      //@ts-ignore
-      fetchPizzas({ currentPage, category, sortType, orderType, search })
+      fetchPizzas({
+        currentPage: String(currentPage),
+        category,
+        sortBy,
+        orderType: String(orderType),
+        search,
+      })
     );
     window.scrollTo(0, 0);
   };
 
   //после первого рендера сохраняем url в redux
-  useEffect(() => {
-    if (window.location.search) {
-      const params = qs.parse(window.location.search.substring(1));
-      const sort = list.find((obj) => obj.sortProperty === params.sortType);
-      dispatch(
-        setFilters({
-          ...params,
-          sort,
-        })
-      );
-      isSearch.current = true;
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (window.location.search) {
+  //     const params = qs.parse(
+  //       window.location.search.substring(1)
+  //     ) as unknown as SearchPizzaParams;
+  //     const sort = list.find((obj) => obj.sortProperty === params.sortBy);
+
+  //     dispatch(
+  //       setFilters({
+  //         searchValue: params.search,
+  //         categoryId: Number(params.category),
+  //         currentPage: Number(params.currentPage),
+  //         sort: sort || list[0],
+  //       })
+  //     );
+  //     isSearch.current = true;
+  //   }
+  // }, []);
 
   //если был первый рендер то запрашиваем пиццы
   useEffect(() => {
     if (!isSearch.current) getPizzas();
 
     isSearch.current = false;
-  }, [category, sortType, orderType, search, currentPage]);
+  }, [category, sortBy, orderType, search, currentPage]);
 
   //если был первый рендер, то проверяем url-параметры и сохранием в redux
-  useEffect(() => {
-    if (isMounted.current) {
-      const queryString = qs.stringify({
-        sortType: sortType,
-        categoryId: categoryId,
-        currentPage,
-        orderType,
-      });
-      navigate(`?${queryString}`);
-    }
-    isMounted.current = true;
-  }, [categoryId, sortType, orderType, currentPage]);
+  // useEffect(() => {
+  //   if (isMounted.current) {
+  //     const queryString = qs.stringify({
+  //       sortType: sortBy,
+  //       categoryId: categoryId,
+  //       currentPage,
+  //       orderType,
+  //     });
+  //     navigate(`?${queryString}`);
+  //   }
+  //   isMounted.current = true;
+
+  //   ///??
+  //   if (!window.location.search) {
+  //     dispatch(fetchPizzas({} as SearchPizzaParams));
+  //   }
+  // }, [categoryId, sortBy, orderType, currentPage]);
 
   const cards = items.map((obj: any) => (
-    <Link key={obj.id} to={`/pizza/${obj.id}`}>
-      {" "}
-      <Card
-        id={obj.id}
-        title={obj.title}
-        price={obj.price}
-        imageUrl={obj.imageUrl}
-        sizes={obj.sizes}
-        types={obj.types}
-      />
-    </Link>
+    <Card
+      key={obj.id}
+      id={obj.id}
+      title={obj.title}
+      price={obj.price}
+      imageUrl={obj.imageUrl}
+      sizes={obj.sizes}
+      types={obj.types}
+    />
   ));
   const placeHolders = [...new Array(6)].map((_, index) => (
     <PlaceHolder key={index} />
