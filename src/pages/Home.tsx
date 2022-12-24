@@ -3,19 +3,6 @@ import { useEffect, useRef, useCallback } from "react";
 import qs from "qs";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  setCategoryId,
-  setSortType,
-  setCurrentPage,
-  setFilters,
-  selectSort,
-  selectFilter,
-} from "../redux/slices/filterSlice";
-import {
-  fetchPizzas,
-  SearchPizzaParams,
-  selectPizzaData,
-} from "../redux/slices/pizzasSlice";
 
 import Categories from "../components/Categories";
 import Sort, { list } from "../components/Sort";
@@ -23,6 +10,10 @@ import Card from "../components/Card";
 import PlaceHolder from "../components/PlaceHolder";
 import Pagination from "../components/PaginationComponent/Pagination";
 import { useAppDispatch } from "../redux/store";
+import { selectFilter, selectSort } from "../redux/filter/selectors";
+import { selectPizzaData } from "../redux/pizza/selectors";
+import { setCategoryId, setCurrentPage } from "../redux/filter/slice";
+import { fetchPizzas } from "../redux/pizza/ayncActions";
 
 const Home: React.FC = () => {
   const dispatch = useAppDispatch();
