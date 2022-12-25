@@ -6,14 +6,16 @@ import Home from "./pages/Home";
 
 import MainLayout from "./layouts/MainLayout";
 
-const Cart = React.lazy(
-  () => import(/* webpackChunkNme: Cart*/ "./pages/Cart")
+const Cart = React.lazy(() =>
+  import(/* webpackChunkName: "Cart"*/ "./pages/Cart").then((m) => ({
+    default: m.Cart,
+  }))
 );
 const FullItem = React.lazy(
-  () => import(/* webpackChunkNme: FullItem*/ "./pages/FullItem")
+  () => import(/* webpackChunkName: "FullItem"*/ "./pages/FullItem")
 );
 const NotFound = React.lazy(
-  () => import(/* webpackChunkNme: NotFound*/ "./pages/NotFound")
+  () => import(/* webpackChunkName: "NotFound"*/ "./pages/NotFound")
 );
 
 function App() {

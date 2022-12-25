@@ -1,5 +1,5 @@
 import React from "react";
-import NotFoundComponent from "../components/NotFoundComponent/NotFoundComponent";
+import { NotFoundComponent } from "../components";
 
 const NotFound: React.FC = () => <NotFoundComponent />;
 

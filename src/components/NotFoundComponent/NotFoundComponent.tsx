@@ -10,5 +10,3 @@ export const NotFoundComponent: React.FC = () => {
     </div>
   );
 };
-
-export default NotFoundComponent;

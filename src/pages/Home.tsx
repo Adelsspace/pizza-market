@@ -4,11 +4,8 @@ import qs from "qs";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 
-import Categories from "../components/Categories";
-import Sort, { list } from "../components/Sort";
-import Card from "../components/Card";
-import PlaceHolder from "../components/PlaceHolder";
-import Pagination from "../components/PaginationComponent/Pagination";
+import { Categories, Sort, Card, PlaceHolder, Pagination } from "../components";
+
 import { useAppDispatch } from "../redux/store";
 import { selectFilter, selectSort } from "../redux/filter/selectors";
 import { selectPizzaData } from "../redux/pizza/selectors";

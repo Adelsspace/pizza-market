@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, memo } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { selectSortType } from "../redux/filter/selectors";
 import { setSort, setSortType } from "../redux/filter/slice";
-import { Sort, SortPropertyEnum } from "../redux/filter/types";
+import { Sort as SortValueType, SortPropertyEnum } from "../redux/filter/types";
 
 type SortType = "asc" | "desc";
 
@@ -12,7 +12,7 @@ type SortList = {
 };
 
 type SortPopupProps = {
-  value: Sort;
+  value: SortValueType;
 };
 
 export const list: SortList[] = [
@@ -21,14 +21,14 @@ export const list: SortList[] = [
   { name: "алфавиту", sortProperty: SortPropertyEnum.TITLE },
 ];
 
-const SortPopup: React.FC<SortPopupProps> = memo(({ value }) => {
+export const Sort: React.FC<SortPopupProps> = memo(({ value }) => {
   const dispatch = useDispatch();
   const orderType = useSelector(selectSortType);
   const sortRef = useRef<HTMLDivElement>(null);
 
   const [openSort, setOpenSort] = useState(false);
 
-  const onClickListItem = (obj: Sort) => {
+  const onClickListItem = (obj: SortValueType) => {
     dispatch(setSort(obj));
     setOpenSort(false);
   };
@@ -100,5 +100,3 @@ const SortPopup: React.FC<SortPopupProps> = memo(({ value }) => {
     </div>
   );
 });
-
-export default SortPopup;

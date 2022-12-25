@@ -14,7 +14,7 @@ type CardProps = {
   types: number[];
 };
 
-const Card: React.FC<CardProps> = ({
+export const Card: React.FC<CardProps> = ({
   id,
   title,
   price,
@@ -103,5 +103,3 @@ const Card: React.FC<CardProps> = ({
     </div>
   );
 };
-
-export default Card;
